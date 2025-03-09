@@ -36,8 +36,9 @@ const Login = () => {
 
   const loginHandler = async () => {
     try {
+      const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api/v1';
       const res = await axios.post(
-        "http://localhost:3000/api/v1/user/login",
+        `${API_BASE_URL}/user/login`,
         user,
         {
           headers: { "Content-Type": "application/json" },
@@ -53,7 +54,7 @@ const Login = () => {
         
         // Make a separate request to get the token
         const tokenResponse = await axios.get(
-          "http://localhost:3000/api/v1/user/getToken",
+          `${API_BASE_URL}/user/getToken`,
           { withCredentials: true }
         );
         
@@ -73,8 +74,9 @@ const Login = () => {
 
   const registerHandler = async () => {
     try {
+      const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api/v1';
       const res = await axios.post(
-        "http://localhost:3000/api/v1/user/register",
+        `${API_BASE_URL}/user/register`,
         newUser,
         {
           headers: { "Content-Type": "application/json" },
