@@ -1,18 +1,20 @@
 # Dependencies
-node_modules
+node_modules/
+.pnp/
+.pnp.js
 
-# Environment variables - contains sensitive information
+# Environment files
 .env
 .env.local
 .env.development.local
 .env.test.local
+.env.production
 .env.production.local
 
 # Build outputs
-/dist
-/build
-/dist-ssr
-*.local
+dist/
+build/
+coverage/
 
 # Logs
 logs
@@ -20,22 +22,42 @@ logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
 
 # Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
-.DS_Store
+.idea/
+.vscode/
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
 
+# System Files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp
+
+# Debug
+debug/
+.debug/
+
 # Testing
 /coverage
+.nyc_output
+
+# Production
+/build
+/dist
+
+# Misc
+*.pem
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
 
 # Backend specific
 /uploads/*
@@ -44,7 +66,3 @@ lerna-debug.log*
 # Frontend specific
 .cache/
 public/dist/
-
-# Misc
-.DS_Store
-Thumbs.db

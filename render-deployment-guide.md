@@ -8,6 +8,33 @@ This guide provides step-by-step instructions for deploying the Mock Interview a
 2. Your code pushed to a GitHub repository
 3. MongoDB Atlas account for database hosting
 
+## Security and Environment Variables
+
+### Important Security Notes
+- Never commit `.env` files to your repository
+- Use `.env.example` files to show which environment variables are needed
+- Store sensitive information like API keys securely
+- Use Render's environment variable management for production deployments
+
+### Required Environment Variables
+
+#### Backend Variables
+```
+PORT=3000
+MONGO_URI=your_mongodb_connection_string
+SECRET_KEY=your_jwt_secret_key
+GEMINI_API_KEY=your_gemini_api_key
+```
+
+#### Frontend Variables
+```
+VITE_GEMINI_API_KEY=your_gemini_api_key
+VITE_ASSEMBLYAI_API_KEY=your_assemblyai_api_key
+VITE_OPENAI_API_KEY=your_openai_api_key
+VI=your_google_client_id
+VITE_API_URL=https://your-backend-url.onrender.com/api/v1/interview
+```
+
 ## Pre-Deployment Setup
 
 1. Ensure your MongoDB Atlas cluster is properly configured:
