@@ -1,0 +1,36 @@
+services:
+  - type: web
+    name: mock-interview-backend
+    env: node
+    buildCommand: npm run install:backend
+    startCommand: npm run start:backend
+    envVars:
+      - key: PORT
+        value: 3000
+      - key: NODE_ENV
+        value: production
+      - key: FRONTEND_URL
+        value: https://mock-interview-frontend.onrender.com
+      - key: MONGO_URI
+        sync: false
+      - key: SECRET_KEY
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+
+  - type: web
+    name: mock-interview-frontend
+    env: node
+    buildCommand: npm run install:frontend && npm run build:frontend
+    startCommand: npm run start:frontend
+    envVars:
+      - key: PORT
+        value: 10000
+      - key: VITE_API_URL
+        value: https://mock-interview-backend.onrender.com/api/v1/interview
+      - key: VITE_GEMINI_API_KEY
+        sync: false
+      - key: VITE_ASSEMBLYAI_API_KEY
+        sync: false
+      - key: VITE_OPENAI_API_KEY
+        sync: false 

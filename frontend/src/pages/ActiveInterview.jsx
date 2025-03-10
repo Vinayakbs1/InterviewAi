@@ -319,9 +319,8 @@ Please evaluate the answer and provide feedback in the following JSON format:
           const token = localStorage.getItem('token');
           console.log("Token available:", !!token);
           
-          // Use environment variable for API base URL
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api/v1';
-const apiUrl = `${API_BASE_URL}/interview/interview/${interviewId}/question/${currentQuestionIndex}`;
+          // Change this line in the processTranscriptWithAI function
+const apiUrl = `http://localhost:3000/api/v1/interview/interview/${interviewId}/question/${currentQuestionIndex}`;
           console.log("API URL:", apiUrl);
           
           const requestData = {

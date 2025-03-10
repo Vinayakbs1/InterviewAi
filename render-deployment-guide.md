@@ -1,107 +1,123 @@
-# Render Deployment Guide for AI Mock Interview Application
+# Render Deployment Guide for Mock Interview Application
 
-## Overview
-
-This guide will walk you through deploying your AI Mock Interview application on Render.com. We'll set up two services:
-
-1. A Web Service for your Node.js backend
-2. A Static Site for your React frontend
+This guide provides step-by-step instructions for deploying the Mock Interview application on Render.
 
 ## Prerequisites
 
-- A Render.com account (sign up at https://render.com if you don't have one)
-- Your project pushed to a Git repository (GitHub, GitLab, or Bitbucket)
+1. A Render account (https://render.com)
+2. Your code pushed to a GitHub repository
+3. MongoDB Atlas account for database hosting
 
-## Step 1: Deploy the Backend Web Service
+## Pre-Deployment Setup
 
-1. Log in to your Render dashboard
+1. Ensure your MongoDB Atlas cluster is properly configured:
+   - Create a new cluster if you don't have one
+   - Set up a database user with appropriate permissions
+   - Configure network access to allow connections from anywhere (or specifically from Render's IPs)
+   - Get your MongoDB connection string
+
+2. Make sure all environment variables are properly set in both `.env` and `.env.production` files
+   - Backend: `PORT`, `MONGO_URI`, `SECRET_KEY`, `GEMINI_API_KEY`
+   - Frontend: `VITE_API_URL`, `VITE_GEMINI_API_KEY`, `VITE_ASSEMBLYAI_API_KEY`, `VITE_OPENAI_API_KEY`
+
+3. Commit all changes to your GitHub repository:
+   ```bash
+   git add .
+   git commit -m "Prepare for Render deployment"
+   git push
+   ```
+
+## Deployment Steps
+
+### Option 1: Using the Blueprint (render.yaml)
+
+1. Log in to your Render account
+2. Click on "Blueprints" in the dashboard
+3. Click "New Blueprint Instance"
+4. Connect your GitHub repository
+5. Render will automatically detect the `render.yaml` file and configure your services
+6. Review the configuration and click "Apply"
+7. Set up the environment variables that are marked as `sync: false` in the render.yaml file:
+   - MONGO_URI: Your MongoDB connection string
+   - SECRET_KEY: Your JWT secret key
+   - GEMINI_API_KEY: Your Google Gemini API key
+   - VITE_GEMINI_API_KEY: Your Google Gemini API key (for frontend)
+   - VITE_ASSEMBLYAI_API_KEY: Your AssemblyAI API key
+   - VITE_OPENAI_API_KEY: Your OpenAI API key
+
+### Option 2: Manual Deployment
+
+#### Backend Deployment
+
+1. Log in to your Render account
 2. Click on "New" and select "Web Service"
-3. Connect your Git repository
-4. Configure the service with the following settings:
-   - **Name**: `ai-mock-interview-backend` (or your preferred name)
-   - **Runtime**: Node
-   - **Build Command**: `npm install`
-   - **Start Command**: `node server.js`
-   - **Root Directory**: `backend` (if your repository contains both frontend and backend)
-
-5. Under "Advanced" settings, add the following environment variables:
-   ```
-   PORT=3000
-   MONGO_URI=mongodb+srv://vbsannatangi:MMqx3AsbaTcDKNzz@cluster0.ifqoy.mongodb.net/Ai-Mock-Interview
-   SECRET_KEY=kuchbhibhai
-   GEMINI_API_KEY=AIzaSyDGNTLIXqKuH0Zd1SzhzB9PwundqpIGB4
-   ```
-
+3. Connect your GitHub repository
+4. Configure the service:
+   - Name: mock-interview-backend
+   - Environment: Node
+   - Root Directory: (leave blank)
+   - Build Command: `npm run install:backend`
+   - Start Command: `npm run start:backend`
+5. Add the following environment variables:
+   - PORT: 3000
+   - NODE_ENV: production
+   - FRONTEND_URL: https://mock-interview-frontend.onrender.com
+   - MONGO_URI: (your MongoDB connection string)
+   - SECRET_KEY: (your secret key)
+   - GEMINI_API_KEY: (your Gemini API key)
 6. Click "Create Web Service"
 
-## Step 2: Update CORS Configuration in Backend
+#### Frontend Deployment
 
-Before deploying, you need to modify your backend's CORS configuration to accept requests from your Render frontend domain.
+1. Log in to your Render account
+2. Click on "New" and select "Web Service"
+3. Connect your GitHub repository
+4. Configure the service:
+   - Name: mock-interview-frontend
+   - Environment: Node
+   - Root Directory: (leave blank)
+   - Build Command: `npm run install:frontend && npm run build:frontend`
+   - Start Command: `npm run start:frontend`
+5. Add the following environment variables:
+   - PORT: 10000
+   - VITE_API_URL: https://mock-interview-backend.onrender.com/api/v1/interview
+   - VITE_GEMINI_API_KEY: (your Gemini API key)
+   - VITE_ASSEMBLYAI_API_KEY: (your AssemblyAI API key)
+   - VITE_OPENAI_API_KEY: (your OpenAI API key)
+6. Click "Create Web Service"
 
-1. In your `server.js` file, update the CORS configuration:
+## Post-Deployment
 
-```javascript
-// Configure CORS with specific options
-app.use(cors({
-    origin: ['http://localhost:5173', 'https://your-frontend-app-name.onrender.com'],
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-    exposedHeaders: ['set-cookie']
-}));
-```
-
-Replace `your-frontend-app-name` with the name you'll give to your frontend service.
-
-## Step 3: Deploy the Frontend Static Site
-
-1. In your Render dashboard, click on "New" and select "Static Site"
-2. Connect your Git repository
-3. Configure the service with the following settings:
-   - **Name**: `ai-mock-interview-frontend` (or your preferred name)
-   - **Build Command**: `npm install && npm run build`
-   - **Publish Directory**: `dist` (Vite's default build output directory)
-   - **Root Directory**: `frontend` (if your repository contains both frontend and backend)
-
-4. Click "Create Static Site"
-
-## Step 4: Update API Endpoint in Frontend
-
-You need to update your frontend code to use the deployed backend URL instead of localhost.
-
-1. Create a `.env` file in your frontend directory with:
-
-```
-VITE_API_BASE_URL=https://your-backend-app-name.onrender.com/api/v1
-```
-
-Replace `your-backend-app-name` with the name you gave to your backend service.
-
-2. Update your API configuration in `src/lib/api.js`:
-
-```javascript
-import axios from 'axios';
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api/v1/interview';
-```
-
-3. Similarly, update all other API calls in your application to use environment variables instead of hardcoded localhost URLs.
-
-## Step 5: Verify Deployment
-
-1. Once both services are deployed, visit your frontend URL (https://your-frontend-app-name.onrender.com)
-2. Test the application to ensure it's working correctly
-3. Check the logs in your Render dashboard if you encounter any issues
-
-## Additional Notes
-
-- **Free Tier Limitations**: Render's free tier will spin down your web service after 15 minutes of inactivity, which may cause a delay when the service needs to spin up again.
-- **Environment Variables**: Keep your environment variables secure. Consider using Render's environment variable management for sensitive information.
-- **Database Connection**: Ensure your MongoDB Atlas cluster is configured to accept connections from any IP address, or specifically from Render's IP ranges.
-- **Custom Domains**: If you have a custom domain, you can configure it in the Render dashboard under your service settings.
+1. Wait for both services to deploy successfully
+2. Test the application by navigating to your frontend URL (https://mock-interview-frontend.onrender.com)
+3. Check the logs for any errors and troubleshoot as needed
 
 ## Troubleshooting
 
-- If you encounter CORS issues, double-check your CORS configuration in the backend.
-- If the frontend can't connect to the backend, verify that you've updated all API endpoint URLs correctly.
-- Check Render logs for both services to identify any deployment or runtime errors.
+- If you encounter CORS issues:
+  - Verify that the backend CORS configuration includes your frontend URL
+  - Check the Network tab in browser DevTools for specific CORS errors
+  - Ensure the `allowedOrigins` array in server.js includes your frontend domain
+
+- If the frontend can't connect to the backend:
+  - Check that the VITE_API_URL is set correctly in the frontend environment variables
+  - Verify the backend is running by visiting the API endpoint directly
+  - Check the backend logs for any errors
+
+- For database connection issues:
+  - Verify your MONGO_URI is correct
+  - Ensure your MongoDB Atlas cluster allows connections from Render's IP addresses
+  - Check if your database user has the correct permissions
+
+## Maintenance
+
+- Monitor your application's performance and logs in the Render dashboard
+- Set up automatic deployments by connecting your GitHub repository to Render
+- Consider setting up a custom domain for your application
+- Regularly update your dependencies to keep the application secure
+
+## Scaling (Future Considerations)
+
+- Upgrade your Render plan as your application grows
+- Consider using Render's autoscaling features for handling increased traffic
+- Set up monitoring and alerts to be notified of any issues

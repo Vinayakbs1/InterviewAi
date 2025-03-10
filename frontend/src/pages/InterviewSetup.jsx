@@ -132,9 +132,8 @@ Provide both questions and answers in a JSON array format:
       console.log(JSON.stringify(mockResponse, null, 2));
 
       // Save interview to database
-      const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api/v1';
       const response = await axios.post(
-        `${API_BASE_URL}/interview/interview`,
+        "http://localhost:3000/api/v1/interview/interview",
         {
           jobRole,
           jobDescription,
