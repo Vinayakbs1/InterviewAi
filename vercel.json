@@ -1,12 +1,14 @@
 {
   "version": 2,
-
+  "buildCommand": "cd frontend && npm install && npm run build",
   "outputDirectory": "frontend/dist",
   "rewrites": [
     { "source": "/api/:path*", "destination": "/api/:path*" },
     { "source": "/(.*)", "destination": "/" }
   ],
   "env": {
-    "VITE_API_URL": "https://mock-interview-api.vercel.app"
+    "VITE_API_URL": "https://mock-interview-api.vercel.app",
+    "NODE_ENV": "production",
+    "FRONTEND_URL": "https://mock-interview.vercel.app"
   }
 }
