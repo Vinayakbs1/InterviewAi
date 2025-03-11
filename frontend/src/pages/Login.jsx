@@ -21,7 +21,7 @@ const Login = () => {
     email: "",
     password: "",
   });
-  
+
   const handleTabChange = (value) => {
     setActiveTab(value);
   };
@@ -34,44 +34,44 @@ const Login = () => {
     setNewUser({ ...newUser, [e.target.name]: e.target.value });
   };
 
-   const loginHandler = async () => {
-          if (!user.email || !user.password) {
-                toast.error("Please fill in all fields");
-                      return;
-                          }
+  const loginHandler = async () => {
+    try {
+      const res = await axios.post(
+        "https://interviewai-backend-kkpk.onrender.com/api/v1/user/login",
+        user,
+        {
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true,
+        }
+      );
 
-                              try {
-                                    setIsLoading(true);
-                                          const res = await axios.post(
-                                                  "https://interviewai-backend-kkpk.onrender.com/api/v1/user/login",
-                                                          user,
-                                                                  {
-                                                                            headers: { "Content-Type": "application/json" },
-                                                                                      withCredentials: true,
-                                                                                              }
-                                                                                                    );
+      console.log("Login Response:", res.data);
 
-                                                                                                          console.log("Login Response:", res.data);
+      if (res.data.success) {
+        // Store user information and token in localStorage
+        localStorage.setItem(
+          "userName",
+          res.data.fullName || user.email.split("@")[0]
+        );
+        localStorage.setItem("token", res.data.token);
 
-                                                                                                                if (res.data.success) {
-                                                                                                                        // Store user information in localStorage
-                                                                                                                                localStorage.setItem('userName', res.data.fullName || user.email.split('@')[0]);
-                                                                                                                                        localStorage.setItem('token', res.data.token);
-                                                                                                                                                toast.success(res.data.message || "Login successful!");
-                                                                                                                                                        navigate("/dashboard");
-                                                                                                                                                              } else {
-                                                                                                                                                                      // This handles cases where the API returns success: false
-                                                                                                                                                                              toast.error(res.data.message || "Login failed. Please try again.");
-                                                                                                                                                                                    }
-                                                                                                                                                                                        } catch (e) {
-                                                                                                                                                                                              console.error("Login Error:", e);
-                                                                                                                                                                                                    const errorMessage = e.response?.data?.message || "Failed to login. Please check your credentials.";
-                                                                                                                                                                                                          toast.error(errorMessage);
-                                                                                                                                                                                                              } finally {
-                                                                                                                                                                                                                    setIsLoading(false);
-                                                                                                                                                                                                                        }
-                                                                                                                                                                                                                          };
-   }
+        // Navigate to dashboard without waiting for additional token request
+        navigate("/dashboard");
+        toast.success("Logged in successfully!");
+      }
+    } catch (error) {
+      console.error("Login Error:", error);
+      // More specific error handling
+      if (error.response?.data?.message) {
+        toast.error(error.response.data.message);
+      } else if (error.message) {
+        toast.error(error.message);
+      } else {
+        toast.error("An error occurred during login");
+      }
+    }
+  };
+
   const registerHandler = async () => {
     try {
       const res = await axios.post(
@@ -98,16 +98,30 @@ const Login = () => {
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-lg shadow-lg">
         <div className="text-center">
-          <h2 className="text-3xl font-extrabold text-gray-900">Welcome to InterviewAI</h2>
+          <h2 className="text-3xl font-extrabold text-gray-900">
+            Welcome to InterviewAI
+          </h2>
           <p className="mt-2 text-sm text-gray-600">
             Your AI-powered interview preparation platform
           </p>
         </div>
 
-        <Tabs defaultValue="login" className="w-full" value={activeTab} onValueChange={handleTabChange}>
+        <Tabs
+          defaultValue="login"
+          className="w-full"
+          value={activeTab}
+          onValueChange={handleTabChange}
+        >
           <TabsList className="grid w-full grid-cols-2 mb-8">
-            <TabsTrigger value="login" onClick={() => handleTabChange("login")}>Login</TabsTrigger>
-            <TabsTrigger value="register" onClick={() => handleTabChange("register")}>Register</TabsTrigger>
+            <TabsTrigger value="login" onClick={() => handleTabChange("login")}>
+              Login
+            </TabsTrigger>
+            <TabsTrigger
+              value="register"
+              onClick={() => handleTabChange("register")}
+            >
+              Register
+            </TabsTrigger>
           </TabsList>
 
           <div className="relative overflow-hidden">
@@ -152,7 +166,11 @@ const Login = () => {
                     </Button>
                   </TabsContent>
                 ) : (
-                  <TabsContent value="register" className="space-y-4" forceMount>
+                  <TabsContent
+                    value="register"
+                    className="space-y-4"
+                    forceMount
+                  >
                     <div className="relative">
                       <FaUser className="absolute left-3 top-3 text-gray-400" />
                       <Input

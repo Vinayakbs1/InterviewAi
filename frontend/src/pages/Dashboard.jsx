@@ -196,38 +196,48 @@ export default function Dashboard() {
   }
   
   const completeInterview = async () => {
-    const interviewId = localStorage.getItem('currentInterviewId');
-    if (interviewId) {
-      try {
-        // Complete the interview
-        const completeResponse = await interviewApi.completeInterview(interviewId);
-        console.log("Interview completion response:", completeResponse);
-        
-        // Fetch the results to display
-        const results = await interviewApi.getInterviewResults(interviewId);
-        console.log("Interview results:", results);
-        
-        if (results.overallScore) {
-          toast.success(`Interview completed! Overall score: ${results.overallScore.toFixed(1)}/10`);
-          setFeedback(`Interview completed! Overall score: ${results.overallScore.toFixed(1)}/10`);
-        } else {
-          toast.success("Interview completed successfully!");
-          setFeedback("Interview completed! Thank you for participating.");
-        }
-
-        // Clear the current interview ID
-        localStorage.removeItem('currentInterviewId');
-        
-        // End interview mode and unlock tabs
-        setIsInterviewStarted(false);
-        setIsInterviewLocked(false);
-        
-        // Switch to history tab to show the completed interview
-        setCurrentTab("history");
-      } catch (error) {
-        console.error("Error completing interview:", error);
-        toast.error("Failed to complete interview. Please try again.");
+    try {
+      const interviewId = localStorage.getItem('currentInterviewId');
+      if (!interviewId) {
+        console.error("No interview ID found");
+        return;
       }
+
+      const token = localStorage.getItem('token');
+      if (!token) {
+        console.error("No auth token found");
+        return;
+      }
+
+      // Complete the interview with explicit headers
+      const completeResponse = await axios.post(
+        `https://interviewai-backend-kkpk.onrender.com/api/v1/interview/interview/${interviewId}/complete`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          withCredentials: true
+        }
+      );
+
+      console.log("Interview completion response:", completeResponse);
+
+      // Clear the current interview ID
+      localStorage.removeItem('currentInterviewId');
+      
+      // End interview mode and unlock tabs
+      setIsInterviewStarted(false);
+      setIsInterviewLocked(false);
+      
+      // Switch to history tab
+      setCurrentTab("history");
+      
+      toast.success("Interview completed successfully!");
+    } catch (error) {
+      console.error("Error completing interview:", error);
+      toast.error("Failed to complete interview. Please try again.");
     }
   };
 

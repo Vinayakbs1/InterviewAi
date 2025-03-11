@@ -7,6 +7,7 @@ import { format } from "date-fns";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "react-hot-toast";
+import axios from "axios";
 
 export default function InterviewHistory() {
   const [pastInterviews, setPastInterviews] = useState([]);
@@ -23,10 +24,24 @@ export default function InterviewHistory() {
   const fetchUserInterviews = async () => {
     try {
       setLoading(true);
-      const response = await interviewApi.getUserInterviews();
-      console.log("Fetched interviews:", response);
-      console.log("Interview data structure:", response.interviews ? response.interviews[0] : "No interviews");
-      setPastInterviews(response.interviews || []);
+      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error("No authentication token found");
+      }
+
+      const response = await axios.get(
+        'https://interviewai-backend-kkpk.onrender.com/api/v1/interview/interviews',
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          withCredentials: true
+        }
+      );
+
+      console.log("Fetched interviews:", response.data);
+      setPastInterviews(response.data.interviews || []);
     } catch (error) {
       console.error("Failed to fetch interviews:", error);
       toast.error("Failed to load interview history");
