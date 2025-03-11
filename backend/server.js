@@ -28,6 +28,7 @@ app.use(cors({
     exposedHeaders: ['set-cookie'],
         exposedHeaders: ['set-cookie'],
             sameSite: 'none',
+                secure: true
 }));
 
 // Routes
