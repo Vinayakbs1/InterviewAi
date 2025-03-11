@@ -12,7 +12,6 @@ import { useNavigate } from "react-router-dom"
 import axios from "axios"
 import { toast } from "react-hot-toast"
 import { interviewApi } from "../lib/api"
-import { API_ENDPOINTS } from "@/lib/config"
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -52,7 +51,7 @@ export default function Dashboard() {
         try {
           // Verify token with backend
           const verifyResponse = await axios.get(
-            API_ENDPOINTS.VERIFY_TOKEN,
+            "http://localhost:3000/api/v1/user/verify-token",
             {
               headers: {
                 Authorization: `Bearer ${token}`,
@@ -122,7 +121,7 @@ export default function Dashboard() {
       try {
         const token = localStorage.getItem('token');
         const response = await axios.get(
-          `${API_ENDPOINTS.INTERVIEW_BASE}/interview/${storedInterviewId}/questions`,
+          `http://localhost:3000/api/v1/interview/interview/${storedInterviewId}/questions`,
           {
             headers: {
               "Content-Type": "application/json",
@@ -246,7 +245,7 @@ export default function Dashboard() {
   }
   const logoutHandler = async () => {
     try{
-      const res=await axios.get(API_ENDPOINTS.LOGOUT)
+      const res=await axios.get('http://localhost:3000/api/v1/user/logout')
       if(res.data.success){
          // Clear all authentication data from localStorage
          localStorage.removeItem('token');

@@ -19,39 +19,14 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-// Configure CORS with specific options
+// Configure CORS for localhost only
 app.use(cors({
-    origin: function(origin, callback) {
-        const allowedOrigins = process.env.NODE_ENV === 'production' 
-            ? [process.env.FRONTEND_URL, 'https://mock-interview.vercel.app', 'https://mock-interview-api.vercel.app', 'https://interview-ai-orcin.vercel.app', 'https://interview-ai-qcn7.vercel.app'] 
-            : ['http://localhost:5173'];
-        
-        // Allow requests with no origin (like mobile apps or curl requests)
-        if (!origin) return callback(null, true);
-        
-        if (allowedOrigins.indexOf(origin) !== -1) {
-            callback(null, true);
-        } else {
-            console.log('CORS blocked origin:', origin);
-            callback(null, true); // Temporarily allow all origins for debugging
-        }
-    },
+    origin: 'http://localhost:5173',
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'Access-Control-Allow-Origin', 'Access-Control-Allow-Credentials'],
-    exposedHeaders: ['set-cookie'],
-    preflightContinue: false,
-    optionsSuccessStatus: 204
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    exposedHeaders: ['set-cookie']
 }));
-
-// Add a middleware to log all requests
-app.use((req, res, next) => {
-    console.log(`${req.method} ${req.url} from origin: ${req.headers.origin}`);
-    next();
-});
-
-// Handle preflight requests explicitly
-app.options('*', cors());
 
 // Routes
 app.use('/api/v1/user', userRouter);

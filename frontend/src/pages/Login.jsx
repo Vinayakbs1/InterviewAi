@@ -7,7 +7,6 @@ import { toast } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { FaUser, FaLock, FaEnvelope } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
-import { API_ENDPOINTS } from "@/lib/config";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -38,7 +37,7 @@ const Login = () => {
   const loginHandler = async () => {
     try {
       const res = await axios.post(
-        API_ENDPOINTS.LOGIN,
+        "http://localhost:3000/api/v1/user/login",
         user,
         {
           headers: { "Content-Type": "application/json" },
@@ -54,7 +53,7 @@ const Login = () => {
         
         // Make a separate request to get the token
         const tokenResponse = await axios.get(
-          API_ENDPOINTS.GET_TOKEN,
+          "http://localhost:3000/api/v1/user/getToken",
           { withCredentials: true }
         );
         
@@ -75,7 +74,7 @@ const Login = () => {
   const registerHandler = async () => {
     try {
       const res = await axios.post(
-        API_ENDPOINTS.REGISTER,
+        "http://localhost:3000/api/v1/user/register",
         newUser,
         {
           headers: { "Content-Type": "application/json" },

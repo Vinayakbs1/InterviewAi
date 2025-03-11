@@ -9,7 +9,6 @@ import { toast } from "react-hot-toast";
 import pdfToText from "react-pdftotext";
 import { chatSession } from "../components/GeminiAiModel";
 import { useState } from "react";
-import { API_ENDPOINTS } from "@/lib/config";
 
 export default function InterviewSetup({
   jobRole,
@@ -134,7 +133,7 @@ Provide both questions and answers in a JSON array format:
 
       // Save interview to database
       const response = await axios.post(
-        API_ENDPOINTS.INTERVIEW,
+        "http://localhost:3000/api/v1/interview/interview",
         {
           jobRole,
           jobDescription,
