@@ -52,10 +52,9 @@ const Login = () => {
         localStorage.setItem('userName', res.data.fullName || user.email.split('@')[0]);
         
         // Make a separate request to get the token
-        const tokenResponse = await axios.get(
-          "https://interviewai-backend-kkpk.onrender.com/api/v1/user/getToken",
-          { withCredentials: true }
-        );
+           localStorage.setItem('token', res.data.token); // Store token directly from login response
+                   toast.success(res.data.message);
+                           navigate("/dashboard");
         
         if (tokenResponse.data && tokenResponse.data.token) {
           localStorage.setItem('token', tokenResponse.data.token);

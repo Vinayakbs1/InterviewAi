@@ -25,7 +25,9 @@ app.use(cors({
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
     allowedHeaders: ['Content-Type', 'Authorization'],
-    exposedHeaders: ['set-cookie']
+    exposedHeaders: ['set-cookie'],
+        exposedHeaders: ['set-cookie'],
+            sameSite: 'none',
 }));
 
 // Routes
