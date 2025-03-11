@@ -11,6 +11,7 @@ import { motion, AnimatePresence } from "framer-motion";
 const Login = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = React.useState("login");
+  const [isLoading, setIsLoading] = React.useState(false);
   const [user, setUser] = React.useState({
     email: "",
     password: "",
@@ -21,7 +22,7 @@ const Login = () => {
     email: "",
     password: "",
   });
-  
+
   const handleTabChange = (value) => {
     setActiveTab(value);
   };
@@ -35,7 +36,13 @@ const Login = () => {
   };
 
   const loginHandler = async () => {
+    if (!user.email || !user.password) {
+      toast.error("Please fill in all fields");
+      return;
+    }
+
     try {
+      setIsLoading(true);
       const res = await axios.post(
         "https://interviewai-backend-kkpk.onrender.com/api/v1/user/login",
         user,
@@ -49,29 +56,36 @@ const Login = () => {
 
       if (res.data.success) {
         // Store user information in localStorage
-        localStorage.setItem('userName', res.data.fullName || user.email.split('@')[0]);
-        
-        // Make a separate request to get the token
-           localStorage.setItem('token', res.data.token); // Store token directly from login response
-                   toast.success(res.data.message);
-                           navigate("/dashboard");
-        
-        if (tokenResponse.data && tokenResponse.data.token) {
-          localStorage.setItem('token', tokenResponse.data.token);
-          toast.success(res.data.message);
-          navigate("/dashboard");
-        } else {
-          toast.error("Failed to get authentication token");
-        }
+        localStorage.setItem(
+          "userName",
+          res.data.fullName || user.email.split("@")[0]
+        );
+        localStorage.setItem("token", res.data.token);
+        toast.success(res.data.message || "Login successful!");
+        navigate("/dashboard");
+      } else {
+        // This handles cases where the API returns success: false
+        toast.error(res.data.message || "Login failed. Please try again.");
       }
     } catch (e) {
-      console.log("Login Error:", e.response?.data || e);
-      toast.error(e.response?.data?.message || "An error occurred");
+      console.error("Login Error:", e);
+      const errorMessage =
+        e.response?.data?.message ||
+        "Failed to login. Please check your credentials.";
+      toast.error(errorMessage);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const registerHandler = async () => {
+    if (!newUser.fullName || !newUser.email || !newUser.password) {
+      toast.error("Please fill in all fields");
+      return;
+    }
+
     try {
+      setIsLoading(true);
       const res = await axios.post(
         "https://interviewai-backend-kkpk.onrender.com/api/v1/user/register",
         newUser,
@@ -83,12 +97,39 @@ const Login = () => {
       console.log("Register Response:", res.data);
 
       if (res.data.success) {
-        toast.success(res.data.message);
+        toast.success(res.data.message || "Registration successful!");
+        // Clear the form
+        setNewUser({
+          fullName: "",
+          email: "",
+          password: "",
+        });
+        // Switch to login tab
         setActiveTab("login");
+      } else {
+        toast.error(
+          res.data.message || "Registration failed. Please try again."
+        );
       }
     } catch (e) {
-      console.log("Register Error:", e.response?.data || e);
-      toast.error(e.response?.data?.message || "An error occurred");
+      console.error("Register Error:", e);
+      const errorMessage =
+        e.response?.data?.message || "Failed to register. Please try again.";
+      toast.error(errorMessage);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Handle Enter key press
+  const handleKeyPress = (e, action) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      if (action === "login") {
+        loginHandler();
+      } else if (action === "register") {
+        registerHandler();
+      }
     }
   };
 
@@ -96,16 +137,30 @@ const Login = () => {
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-lg shadow-lg">
         <div className="text-center">
-          <h2 className="text-3xl font-extrabold text-gray-900">Welcome to InterviewAI</h2>
+          <h2 className="text-3xl font-extrabold text-gray-900">
+            Welcome to InterviewAI
+          </h2>
           <p className="mt-2 text-sm text-gray-600">
             Your AI-powered interview preparation platform
           </p>
         </div>
 
-        <Tabs defaultValue="login" className="w-full" value={activeTab} onValueChange={handleTabChange}>
+        <Tabs
+          defaultValue="login"
+          className="w-full"
+          value={activeTab}
+          onValueChange={handleTabChange}
+        >
           <TabsList className="grid w-full grid-cols-2 mb-8">
-            <TabsTrigger value="login" onClick={() => handleTabChange("login")}>Login</TabsTrigger>
-            <TabsTrigger value="register" onClick={() => handleTabChange("register")}>Register</TabsTrigger>
+            <TabsTrigger value="login" onClick={() => handleTabChange("login")}>
+              Login
+            </TabsTrigger>
+            <TabsTrigger
+              value="register"
+              onClick={() => handleTabChange("register")}
+            >
+              Register
+            </TabsTrigger>
           </TabsList>
 
           <div className="relative overflow-hidden">
@@ -129,6 +184,7 @@ const Login = () => {
                         type="email"
                         placeholder="Email"
                         className="pl-10"
+                        onKeyPress={(e) => handleKeyPress(e, "login")}
                       />
                     </div>
                     <div className="relative">
@@ -140,17 +196,23 @@ const Login = () => {
                         type="password"
                         placeholder="Password"
                         className="pl-10"
+                        onKeyPress={(e) => handleKeyPress(e, "login")}
                       />
                     </div>
                     <Button
                       onClick={loginHandler}
                       className="w-full bg-black hover:bg-gray-800 text-white"
+                      disabled={isLoading}
                     >
-                      Sign in
+                      {isLoading ? "Signing in..." : "Sign in"}
                     </Button>
                   </TabsContent>
                 ) : (
-                  <TabsContent value="register" className="space-y-4" forceMount>
+                  <TabsContent
+                    value="register"
+                    className="space-y-4"
+                    forceMount
+                  >
                     <div className="relative">
                       <FaUser className="absolute left-3 top-3 text-gray-400" />
                       <Input
@@ -160,6 +222,7 @@ const Login = () => {
                         type="text"
                         placeholder="Full Name"
                         className="pl-10"
+                        onKeyPress={(e) => handleKeyPress(e, "register")}
                       />
                     </div>
                     <div className="relative">
@@ -171,6 +234,7 @@ const Login = () => {
                         type="email"
                         placeholder="Email"
                         className="pl-10"
+                        onKeyPress={(e) => handleKeyPress(e, "register")}
                       />
                     </div>
                     <div className="relative">
@@ -182,13 +246,15 @@ const Login = () => {
                         type="password"
                         placeholder="Password"
                         className="pl-10"
+                        onKeyPress={(e) => handleKeyPress(e, "register")}
                       />
                     </div>
                     <Button
                       onClick={registerHandler}
                       className="w-full bg-black hover:bg-gray-800 text-white"
+                      disabled={isLoading}
                     >
-                      Create Account
+                      {isLoading ? "Creating Account..." : "Create Account"}
                     </Button>
                   </TabsContent>
                 )}
