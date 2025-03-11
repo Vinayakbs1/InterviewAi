@@ -11,6 +11,7 @@ import { motion, AnimatePresence } from "framer-motion";
 const Login = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = React.useState("login");
+  const [isLoading, setIsLoading] = React.useState(false);
   const [user, setUser] = React.useState({
     email: "",
     password: "",
@@ -35,40 +36,52 @@ const Login = () => {
   };
 
   const loginHandler = async () => {
+    if (isLoading) return;
+    setIsLoading(true);
     try {
       const res = await axios.post(
         "https://interviewai-backend-kkpk.onrender.com/api/v1/user/login",
         user,
         {
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+          },
           withCredentials: true,
+          credentials: 'include'
         }
       );
 
       console.log("Login Response:", res.data);
 
       if (res.data.success) {
-        // Store user information and token in localStorage
         localStorage.setItem(
           "userName",
           res.data.fullName || user.email.split("@")[0]
         );
         localStorage.setItem("token", res.data.token);
-
-        // Navigate to dashboard without waiting for additional token request
-        navigate("/dashboard");
+        
+        // Set token in axios defaults for subsequent requests
+        axios.defaults.headers.common['Authorization'] = `Bearer ${res.data.token}`;
+        
         toast.success("Logged in successfully!");
+        navigate("/dashboard");
       }
     } catch (error) {
-      console.error("Login Error:", error);
-      // More specific error handling
-      if (error.response?.data?.message) {
+      console.error("Login Error Details:", {
+        message: error.message,
+        response: error.response,
+        status: error.response?.status
+      });
+      
+      if (error.response?.status === 401) {
+        toast.error("Invalid email or password");
+      } else if (error.response?.data?.message) {
         toast.error(error.response.data.message);
-      } else if (error.message) {
-        toast.error(error.message);
       } else {
-        toast.error("An error occurred during login");
+        toast.error("Login failed. Please try again.");
       }
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -161,8 +174,9 @@ const Login = () => {
                     <Button
                       onClick={loginHandler}
                       className="w-full bg-black hover:bg-gray-800 text-white"
+                      disabled={isLoading}
                     >
-                      Sign in
+                      {isLoading ? "Signing in..." : "Sign in"}
                     </Button>
                   </TabsContent>
                 ) : (
