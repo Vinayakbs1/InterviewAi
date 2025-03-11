@@ -21,7 +21,7 @@ app.use(cookieParser());
 
 // Configure CORS for localhost only
 app.use(cors({
-    origin: 'https://interviewai-rvh6.onrender.com'
+    origin: 'https://interviewai-rvh6.onrender.com',
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
     allowedHeaders: ['Content-Type', 'Authorization'],
