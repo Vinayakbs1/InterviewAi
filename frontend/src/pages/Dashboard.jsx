@@ -51,7 +51,7 @@ export default function Dashboard() {
         try {
           // Verify token with backend
           const verifyResponse = await axios.get(
-            "http://localhost:3000/api/v1/user/verify-token",
+            "https://interviewai-backend-kkpk.onrender.com/api/v1/user/verify-token",
             {
               headers: {
                 Authorization: `Bearer ${token}`,
@@ -121,7 +121,7 @@ export default function Dashboard() {
       try {
         const token = localStorage.getItem('token');
         const response = await axios.get(
-          `http://localhost:3000/api/v1/interview/interview/${storedInterviewId}/questions`,
+          `https://interviewai-backend-kkpk.onrender.com/api/v1/interview/interview/${storedInterviewId}/questions`,
           {
             headers: {
               "Content-Type": "application/json",
@@ -245,7 +245,7 @@ export default function Dashboard() {
   }
   const logoutHandler = async () => {
     try{
-      const res=await axios.get('http://localhost:3000/api/v1/user/logout')
+      const res=await axios.get('https://interviewai-backend-kkpk.onrender.com/api/v1/user/logout')
       if(res.data.success){
          // Clear all authentication data from localStorage
          localStorage.removeItem('token');

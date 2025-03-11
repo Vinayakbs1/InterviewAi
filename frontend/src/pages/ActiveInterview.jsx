@@ -320,7 +320,7 @@ Please evaluate the answer and provide feedback in the following JSON format:
           console.log("Token available:", !!token);
           
           // Change this line in the processTranscriptWithAI function
-const apiUrl = `http://localhost:3000/api/v1/interview/interview/${interviewId}/question/${currentQuestionIndex}`;
+const apiUrl = `https://interviewai-backend-kkpk.onrender.com/api/v1/interview/interview/${interviewId}/question/${currentQuestionIndex}`;
           console.log("API URL:", apiUrl);
           
           const requestData = {

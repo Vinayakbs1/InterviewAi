@@ -37,7 +37,7 @@ const Login = () => {
   const loginHandler = async () => {
     try {
       const res = await axios.post(
-        "http://localhost:3000/api/v1/user/login",
+        "https://interviewai-backend-kkpk.onrender.com/api/v1/user/login",
         user,
         {
           headers: { "Content-Type": "application/json" },
@@ -53,7 +53,7 @@ const Login = () => {
         
         // Make a separate request to get the token
         const tokenResponse = await axios.get(
-          "http://localhost:3000/api/v1/user/getToken",
+          "https://interviewai-backend-kkpk.onrender.com/api/v1/user/getToken",
           { withCredentials: true }
         );
         
@@ -74,7 +74,7 @@ const Login = () => {
   const registerHandler = async () => {
     try {
       const res = await axios.post(
-        "http://localhost:3000/api/v1/user/register",
+        "https://interviewai-backend-kkpk.onrender.com/api/v1/user/register",
         newUser,
         {
           headers: { "Content-Type": "application/json" },

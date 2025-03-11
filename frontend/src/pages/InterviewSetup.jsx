@@ -133,7 +133,7 @@ Provide both questions and answers in a JSON array format:
 
       // Save interview to database
       const response = await axios.post(
-        "http://localhost:3000/api/v1/interview/interview",
+        "https://interviewai-backend-kkpk.onrender.com/api/v1/interview/interview",
         {
           jobRole,
           jobDescription,
