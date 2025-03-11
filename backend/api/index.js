@@ -1,17 +1,17 @@
-
 import express from 'express';
 import dotenv from 'dotenv';
-import connectDB from './db/database.js';
+import connectDB from '../db/database.js';
 import cors from 'cors';
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
-import jobResumeRouter from './routes/JobResumeSchema.js';
-import userRouter from './routes/user.js';
-import interviewRouter from './routes/Interview.js';
+import userRouter from '../routes/user.js';
+import interviewRouter from '../routes/Interview.js';
 
-
+// Initialize express app
 const app = express();
 dotenv.config();
+
+// Connect to database
 connectDB();
 
 // Middleware
@@ -22,9 +22,13 @@ app.use(cookieParser());
 // Configure CORS with specific options
 app.use(cors({
     origin: function(origin, callback) {
-        const allowedOrigins = process.env.NODE_ENV === 'production' 
-            ? [process.env.FRONTEND_URL, 'https://mock-interview.vercel.app', 'https://mock-interview-api.vercel.app', 'https://interview-ai-orcin.vercel.app', 'https://interview-ai-qcn7.vercel.app'] 
-            : ['http://localhost:5173'];
+        const allowedOrigins = [
+            'https://mock-interview.vercel.app', 
+            'https://mock-interview-api.vercel.app', 
+            'https://interview-ai-orcin.vercel.app', 
+            'https://interview-ai-qcn7.vercel.app',
+            'http://localhost:5173'
+        ];
         
         // Allow requests with no origin (like mobile apps or curl requests)
         if (!origin) return callback(null, true);
@@ -55,9 +59,12 @@ app.options('*', cors());
 
 // Routes
 app.use('/api/v1/user', userRouter);
-// app.use('/api/v1/jobresume', jobResumeRouter);
 app.use('/api/v1/interview', interviewRouter);
 
+// Root route for health check
+app.get('/', (req, res) => {
+    res.status(200).json({ message: 'API is running' });
+});
 
-const port = process.env.PORT || 3000;
-app.listen(port, () => console.log(`Server running on port ${port}`));
+// Export the Express API
+export default app;
