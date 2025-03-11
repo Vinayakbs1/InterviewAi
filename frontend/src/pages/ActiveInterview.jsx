@@ -8,6 +8,7 @@ import { toast } from "react-hot-toast"
 import Webcam from "react-webcam"
 import axios from "axios"
 import useSpeechToText from "react-hook-speech-to-text"
+import { API_ENDPOINTS } from "@/lib/config"
 
 export default function ActiveInterview({
   currentQuestion,
@@ -319,8 +320,8 @@ Please evaluate the answer and provide feedback in the following JSON format:
           const token = localStorage.getItem('token');
           console.log("Token available:", !!token);
           
-          // Change this line in the processTranscriptWithAI function
-const apiUrl = `http://localhost:3000/api/v1/interview/interview/${interviewId}/question/${currentQuestionIndex}`;
+          // Use API_ENDPOINTS from config
+          const apiUrl = `${API_ENDPOINTS.INTERVIEW_BASE}/interview/${interviewId}/question/${currentQuestionIndex}`;
           console.log("API URL:", apiUrl);
           
           const requestData = {
@@ -329,7 +330,7 @@ const apiUrl = `http://localhost:3000/api/v1/interview/interview/${interviewId}/
           };
           console.log("Request data:", requestData);
           
-          const response = await axios.patch(
+          const response = await axios.post(
             apiUrl,
             requestData,
             {

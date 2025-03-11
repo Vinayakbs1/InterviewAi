@@ -1,6 +1,5 @@
 import axios from 'axios';
-
-const API_BASE_URL = 'http://localhost:3000/api/v1/interview';
+import { API_ENDPOINTS } from './config';
 
 const getAuthHeaders = () => {
   const token = localStorage.getItem('token');
@@ -19,7 +18,7 @@ export const interviewApi = {
   getUserInterviews: async () => {
     try {
       const response = await axios.get(
-        `${API_BASE_URL}/user-interviews`,
+        API_ENDPOINTS.USER_INTERVIEWS,
         getAuthHeaders()
       );
       return response.data;
@@ -33,7 +32,7 @@ export const interviewApi = {
   getInterviewResults: async (interviewId) => {
     try {
       const response = await axios.get(
-        `${API_BASE_URL}/interview/${interviewId}/results`,
+        `${API_ENDPOINTS.INTERVIEW_BASE}/interview/${interviewId}/results`,
         getAuthHeaders()
       );
       return response.data;
@@ -47,7 +46,7 @@ export const interviewApi = {
   completeInterview: async (interviewId, overallFeedback = 'Interview completed successfully') => {
     try {
       const response = await axios.post(
-        `${API_BASE_URL}/interview/${interviewId}/complete`,
+        `${API_ENDPOINTS.INTERVIEW_BASE}/interview/${interviewId}/complete`,
         { overallFeedback },
         getAuthHeaders()
       );
