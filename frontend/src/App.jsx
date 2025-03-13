@@ -3,6 +3,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import LandingPage from './pages/LandingPage'
 import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
+import InterviewHistory from './pages/InterviewHistory'
 import { Toaster } from 'react-hot-toast'
 
 const appRouter = createBrowserRouter([
@@ -17,6 +18,14 @@ const appRouter = createBrowserRouter([
   {
     path: '/dashboard',
     element: <Dashboard />
+  },
+  {
+    path: '/interview-history',
+    element: <InterviewHistory />
+  },
+  {
+    path: '*',
+    element: <LandingPage />
   }
 ])
 
