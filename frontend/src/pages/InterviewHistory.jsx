@@ -30,7 +30,7 @@ export default function InterviewHistory() {
       }
 
       const response = await axios.get(
-        'https://interviewai-backend-kkpk.onrender.com/api/v1/interview/interviews',
+        'https://interviewai-backend-kkpk.onrender.com/api/v1/interview/user-interviews',
         {
           headers: {
             Authorization: `Bearer ${token}`,

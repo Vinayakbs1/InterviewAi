@@ -1,6 +1,7 @@
+
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:3000/api/v1/interview';
+const API_BASE_URL = 'https://interviewai-backend-kkpk.onrender.com/api/v1/interview';
 
 const getAuthHeaders = () => {
   const token = localStorage.getItem('token');
@@ -19,7 +20,7 @@ export const interviewApi = {
   getUserInterviews: async () => {
     try {
       const response = await axios.get(
-        `${API_BASE_URL}/user-interviews`,
+        `${API_BASE_URL}/interviews`,
         getAuthHeaders()
       );
       return response.data;

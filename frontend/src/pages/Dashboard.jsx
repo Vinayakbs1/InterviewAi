@@ -9,7 +9,7 @@ import InterviewSetup from "./InterviewSetup"
 import ActiveInterview from "./ActiveInterview"
 import InterviewHistory from "./InterviewHistory"
 import { useNavigate } from "react-router-dom"
-import axios from "axios"
+import axios from "axios";
 import { toast } from "react-hot-toast"
 import { interviewApi } from "../lib/api"
 
@@ -59,16 +59,16 @@ export default function Dashboard() {
               withCredentials: true,
             }
           );
-          
+
           // If verification fails, the catch block will handle it
           console.log("Token verified successfully");
-          
+
           // Parse token for user info
           const base64Url = token.split('.')[1];
           const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
           const payload = JSON.parse(window.atob(base64));
           const userId = payload.userid;
-          
+
           const storedName = localStorage.getItem("userName");
           if (storedName) {
             setUserName(storedName);
@@ -95,18 +95,18 @@ export default function Dashboard() {
     if (generatedQuestionsWithAnswers && generatedQuestionsWithAnswers.length > 0) {
       // Extract just the question text for display
       const questionTexts = generatedQuestionsWithAnswers.map(q => q.question)
-      
+
       // Store the full questions with answers
       setQuestions(generatedQuestionsWithAnswers)
       // Ensure we're setting a string, not an object
       setCurrentQuestion(questionTexts[0])
       setIsInterviewStarted(true)
       setCurrentQuestionIndex(0)
-      
+
       // Switch to interview tab and lock it
       setCurrentTab("interview")
       setIsInterviewLocked(true)
-      
+
       // Store the interview ID if provided
       if (interviewId) {
         localStorage.setItem('currentInterviewId', interviewId);
@@ -114,7 +114,7 @@ export default function Dashboard() {
       }
       return
     }
-    
+
     // If we have an interview ID but no questions, fetch them from the API
     const storedInterviewId = localStorage.getItem('currentInterviewId');
     if (storedInterviewId) {
@@ -130,7 +130,7 @@ export default function Dashboard() {
             withCredentials: true,
           }
         );
-        
+
         if (response.data && response.data.questions) {
           setQuestions(response.data.questions);
           // Ensure we're setting a string, not an object
@@ -144,7 +144,7 @@ export default function Dashboard() {
         toast.error("Failed to fetch interview questions");
       }
     }
-    
+
     // Fallback to hardcoded questions if no questions were provided or fetched
     const fallbackQuestions = [
       {
@@ -168,7 +168,7 @@ export default function Dashboard() {
         answer: "A strong answer would discuss principles like DRY, SOLID, code reviews, testing strategies, and documentation practices."
       }
     ]
-    
+
     setQuestions(fallbackQuestions)
     // Ensure we're setting a string, not an object
     setCurrentQuestion(fallbackQuestions[0].question)
@@ -194,7 +194,7 @@ export default function Dashboard() {
       completeInterview();
     }
   }
-  
+
   const completeInterview = async () => {
     try {
       const interviewId = localStorage.getItem('currentInterviewId');
@@ -226,14 +226,14 @@ export default function Dashboard() {
 
       // Clear the current interview ID
       localStorage.removeItem('currentInterviewId');
-      
+
       // End interview mode and unlock tabs
       setIsInterviewStarted(false);
       setIsInterviewLocked(false);
-      
+
       // Switch to history tab
       setCurrentTab("history");
-      
+
       toast.success("Interview completed successfully!");
     } catch (error) {
       console.error("Error completing interview:", error);
@@ -262,7 +262,7 @@ export default function Dashboard() {
          localStorage.removeItem('userName');
          localStorage.removeItem('currentInterviewId');
          localStorage.removeItem('microphonePermissionGranted');
-         
+
          toast.success(res.data.message)
          navigate('/login')
       }
@@ -273,7 +273,7 @@ export default function Dashboard() {
        localStorage.removeItem('userName');
        localStorage.removeItem('currentInterviewId');
        localStorage.removeItem('microphonePermissionGranted');
-       
+
        toast.error(err.message || "Logged out due to an error");
        navigate('/login');
     }
