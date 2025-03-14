@@ -118,18 +118,8 @@ export default function ActiveInterview({
     resetTranscript
   } = useSpeechToText({
     continuous: true,
-    useLegacyResults: false,
-    speechRecognitionProperties: {
-      lang: 'en-US',
-      interimResults: true,
-      maxAlternatives: 1
-    },
     crossBrowser: true,
-    timeout: 30000, // Increased timeout for better recognition
-    audioContext: { // Provide custom audio context settings
-      sampleRate: 48000,
-      channelCount: 1
-    }
+    useLegacyResults: false
   })
 
   // Update transcript when results change
